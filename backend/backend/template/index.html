@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Story Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@1&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<audio id="bg-music" loop></audio>
+
+
+<button id="music-toggle" onclick="toggleMusic()">🎵 Music: Off</button>
+
+<div class="container">
+    <div id="quiz-page" class="page active">
+    <p class="subtitle">✦ AN ENCHANTED PORTAL ✦</p>
+    <h1>Your Fictional Travel Realm</h1>
+    <p class="instruction">Select your traits to reveal your fate</p>
+
+    <div class="quiz-section">
+        <label>I — PERSONALITY</label>
+        <div class="option-group">
+            <div class="option selected" data-value="1" onclick="selectOption('personality', this)">🌙 Calm</div>
+            <div class="option" data-value="2" onclick="selectOption('personality', this)">🔥 Chaotic</div>
+        </div>
+
+        <label>II — MOOD</label>
+        <div class="option-group">
+            <div class="option selected" data-value="1" onclick="selectOption('mood', this)">Peaceful</div>
+            <div class="option" data-value="2" onclick="selectOption('mood', this)">Mysterious</div>
+            <div class="option" data-value="3" onclick="selectOption('mood', this)">Dangerous</div>
+            <div class="option" data-value="4" onclick="selectOption('mood', this)">Despair</div>
+        </div>
+
+        <label>III — BUDGET</label>
+        <div class="option-group">
+            <div class="option selected" data-value="1" onclick="selectOption('budget', this)">Low</div>
+            <div class="option" data-value="2" onclick="selectOption('budget', this)">Medium</div>
+            <div class="option" data-value="3" onclick="selectOption('budget', this)">High</div>
+        </div>
+
+        <label>IV — PREFERENCE</label>
+        <div class="option-group">
+            <div class="option selected" data-value="1" onclick="selectOption('preference', this)">Healing</div>
+            <div class="option" data-value="2" onclick="selectOption('preference', this)">Battle</div>
+            <div class="option" data-value="3" onclick="selectOption('preference', this)">Explore</div>
+        </div>
+
+        <input type="hidden" id="personality" value="1">
+        <input type="hidden" id="mood" value="1">
+        <input type="hidden" id="budget" value="1">
+        <input type="hidden" id="preference" value="1">
+    </div>
+
+    <button class="generate-btn" onclick="generateJourney()">GENERATE STORY</button>
+    
+    <div class="saved-section" style="margin-top:20px; background:rgba(255,255,255,0.03); padding:12px; border-radius:8px; text-align:center;">
+        <button class="generate-btn" onclick="showPage('saved-page')">View Saved Stories</button>
+    </div>
+</div>
+
+<div id="story-page" class="page">
+    <p class="subtitle">✦ YOUR DESTINY REVEALED ✦</p>
+
+    <div class="output-box">
+        <img id="story-image" src="" alt="Story visual" style="display: none; width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid rgba(255, 215, 0, 0.3);">
+        <p id="story-display">Your journey awaits...</p>
+    </div>
+    <button class="generate-btn back-btn" onclick="showPage('quiz-page')">RETURN TO PORTAL</button>
+</div>
+
+<div id="saved-page" class="page">
+    <p class="subtitle">✦ SAVED STORIES ✦</p>
+    <div class="output-box" style="padding: 20px;">
+        <div id="saved-list">Loading saved stories...</div>
+    </div>
+    <button class="generate-btn back-btn" onclick="showPage('quiz-page')">BACK TO PORTAL</button>
+</div>
+
+<script src="{{ url_for('static', filename='script.js')}}"></script>
+</body>
+</html>
