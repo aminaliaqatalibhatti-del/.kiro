@@ -1,0 +1,40 @@
+{# ── Shared Auth Modals ──────────────────────────────────────────────────────
+   Included via {% include '_auth_modals.html' %} in every page template.
+   Handles login and register. All logic lives in main.js.
+─────────────────────────────────────────────────────────────────────────── #}
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">✕</button>
+    <h2>Welcome back</h2>
+    <p class="modal-sub">Log in to access your trips and plans.</p>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required/>
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required/>
+      <div class="form-error" id="loginError" role="alert"></div>
+      <button type="submit" class="btn-primary btn-full">Log in</button>
+    </form>
+    <p class="modal-switch">No account? <span onclick="switchModal('loginModal','registerModal')">Sign up</span></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('registerModal')" aria-label="Close">✕</button>
+    <h2>Create your account</h2>
+    <p class="modal-sub">Start planning smarter trips today.</p>
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      <label>Full Name</label>
+      <input type="text" id="regName" placeholder="Your name" autocomplete="given-name" required/>
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email" required/>
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="Min 6 characters" autocomplete="new-password" required/>
+      <div class="form-error" id="registerError" role="alert"></div>
+      <button type="submit" class="btn-primary btn-full">Create account</button>
+    </form>
+    <p class="modal-switch">Already have an account? <span onclick="switchModal('registerModal','loginModal')">Log in</span></p>
+  </div>
+</div>

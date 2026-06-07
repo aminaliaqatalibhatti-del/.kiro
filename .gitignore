@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+.env
+
+# Environment / secrets
+.env
+.env.*
+*.env
+secrets.py
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data files with user data (keep structure, not content)
+backend/backend/data/users.json
+backend/backend/data/trips.json
+
+# Diagnostic / temp scripts
+diag.py
+diag2.py
+diag3_output.txt
+diag2_output.txt
+diag_output.txt
+diag_final.txt
+check_html.py
+check_html_final.txt
+check_html_out.txt
+check_v.py
+check_v_out.txt
+clean_and_verify.py
+clean_verify_out.txt
+count_dests.py
+count_dests_out.txt
+dest_count.txt
+find_template.py
+find_template_out.txt
+full_audit.py
+full_audit_out.txt
+verify_dests.py
+verify_dests_out.txt
+verify_dests_out2.txt
+
+# Logs
+*.log

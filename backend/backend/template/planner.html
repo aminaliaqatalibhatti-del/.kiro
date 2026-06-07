@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <title>Trip Planner — TripPilot AI</title>
+  <meta name="description" content="Build your perfect AI-powered travel itinerary in minutes. Enter destination, budget and interests — get a full day-by-day plan instantly."/>
+  <meta property="og:title" content="Trip Planner — TripPilot AI"/>
+  <meta property="og:description" content="Build your perfect AI-powered travel itinerary in minutes."/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <!-- Inter: only weights actually used (400/500/600/700/800). Saves ~35% of font payload -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') ~ '?v=' ~ v }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='planner.css') ~ '?v=' ~ v }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='ai_assistant.css') ~ '?v=' ~ v }}"/>
+  <!-- Critical CSS: dark background renders instantly before main.css parses -->
+  <style>html,body{background:#0a0a0f;color:#f1f5f9;margin:0}</style>
+</head>
+<body class="planner-body has-bottom-nav">
+
+<!-- NAV -->
+<nav class="navbar navbar-solid">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">✈</span>
+      <span class="logo-text">TripPilot <span class="logo-ai">AI</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/explore">Explore</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-ghost" onclick="openModal('loginModal')">Log in</button>
+      <button class="btn-primary" onclick="openModal('registerModal')">Sign up</button>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<main class="planner-main">
+  <!-- STEP INDICATOR -->
+  <div class="steps-indicator" id="stepsIndicator">
+    <div class="si-step active" data-step="1">
+      <div class="si-dot"><span>1</span></div>
+      <span>Traveler</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step" data-step="2">
+      <div class="si-dot"><span>2</span></div>
+      <span>Trip Details</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step" data-step="3">
+      <div class="si-dot"><span>3</span></div>
+      <span>Budget</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step" data-step="4">
+      <div class="si-dot"><span>4</span></div>
+      <span>Preferences</span>
+    </div>
+    <div class="si-line"></div>
+    <div class="si-step" data-step="5">
+      <div class="si-dot"><span>5</span></div>
+      <span>Results</span>
+    </div>
+  </div>
+
+  <!-- FORM CONTAINER -->
+  <div class="planner-container" id="plannerContainer">
+
+    <!-- STEP 1: Traveler Info -->
+    <div class="planner-step active" id="step1">
+      <div class="step-header">
+        <div class="step-badge">Step 1 of 4</div>
+        <h1>Tell us about yourself</h1>
+        <p>This helps us personalise your perfect trip.</p>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Your Name <span class="req">*</span></label>
+          <input type="text" id="travelerName" placeholder="e.g. Sarah" autocomplete="given-name"/>
+        </div>
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" id="travelerAge" placeholder="28" min="1" max="120"/>
+        </div>
+        <div class="form-group">
+          <label>Number of Travelers</label>
+          <div class="number-input">
+            <button type="button" onclick="adjustNum('travelers',-1)">−</button>
+            <span id="travelersDisplay">1</span>
+            <button type="button" onclick="adjustNum('travelers',1)">+</button>
+          </div>
+          <input type="hidden" id="travelers" value="1"/>
+        </div>
+        <div class="form-group full">
+          <label>Travel Type <span class="req">*</span></label>
+          <div class="chip-group" id="travelTypeGroup">
+            <div class="chip selected" data-value="solo" onclick="selectChip(this,'travelType')">
+              🧳 Solo
+            </div>
+            <div class="chip" data-value="couple" onclick="selectChip(this,'travelType')">
+              💑 Couple
+            </div>
+            <div class="chip" data-value="family" onclick="selectChip(this,'travelType')">
+              👨‍👩‍👧 Family
+            </div>
+            <div class="chip" data-value="friends" onclick="selectChip(this,'travelType')">
+              👯 Friends
+            </div>
+          </div>
+          <input type="hidden" id="travelType" value="solo"/>
+        </div>
+      </div>
+      <div class="step-footer">
+        <div></div>
+        <button class="btn-primary btn-next" onclick="nextStep(1)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Trip Details -->
+    <div class="planner-step" id="step2">
+      <div class="step-header">
+        <div class="step-badge">Step 2 of 4</div>
+        <h1>Where are you going?</h1>
+        <p>Enter your journey details below.</p>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Starting Location</label>
+          <input type="text" id="startLocation" placeholder="e.g. London, UK" autocomplete="off"/>
+        </div>
+        <div class="form-group full">
+          <label>Destination <span class="req">*</span></label>
+          <input type="text" id="destination" placeholder="e.g. Paris, Bali, Dubai…" autocomplete="off" oninput="suggestDest(this.value)"/>
+          <div class="dest-autocomplete" id="destAutocomplete"></div>
+          <!-- Live AI match score shown when destination is selected -->
+          <div id="destMatchPreview"></div>
+        </div>
+        <div class="form-group">
+          <label>Start Date <span class="req">*</span></label>
+          <input type="date" id="startDate"/>
+        </div>
+        <div class="form-group">
+          <label>Number of Days <span class="req">*</span></label>
+          <div class="number-input">
+            <button type="button" onclick="adjustNum('days',-1)">−</button>
+            <span id="daysDisplay">5</span>
+            <button type="button" onclick="adjustNum('days',1)">+</button>
+          </div>
+          <input type="hidden" id="days" value="5"/>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn-ghost" onclick="prevStep(2)">← Back</button>
+        <button class="btn-primary btn-next" onclick="nextStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Budget -->
+    <div class="planner-step" id="step3">
+      <div class="step-header">
+        <div class="step-badge">Step 3 of 4</div>
+        <h1>What's your budget?</h1>
+        <p>We'll optimise your itinerary to make the most of it.</p>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Total Trip Budget (USD) <span class="req">*</span></label>
+          <div class="budget-input-wrap">
+            <span class="budget-prefix">$</span>
+            <input type="number" id="budget" placeholder="1500" min="0" step="50"/>
+          </div>
+          <div class="budget-levels">
+            <button type="button" class="budget-level-btn" onclick="setBudgetPreset(500)">$500 Budget</button>
+            <button type="button" class="budget-level-btn" onclick="setBudgetPreset(1500)">$1,500 Mid-range</button>
+            <button type="button" class="budget-level-btn" onclick="setBudgetPreset(5000)">$5,000 Premium</button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Accommodation Preference</label>
+          <div class="chip-group">
+            <div class="chip selected" data-value="hotel" onclick="selectChip(this,'accommodation')">🏨 Hotel</div>
+            <div class="chip" data-value="hostel" onclick="selectChip(this,'accommodation')">🛏 Hostel</div>
+            <div class="chip" data-value="apartment" onclick="selectChip(this,'accommodation')">🏠 Apartment</div>
+            <div class="chip" data-value="resort" onclick="selectChip(this,'accommodation')">🌴 Resort</div>
+          </div>
+          <input type="hidden" id="accommodation" value="hotel"/>
+        </div>
+        <div class="form-group full">
+          <label>Transportation</label>
+          <div class="chip-group">
+            <div class="chip selected" data-value="public" onclick="selectChip(this,'transport')">🚌 Public</div>
+            <div class="chip" data-value="taxi" onclick="selectChip(this,'transport')">🚕 Taxi/Rideshare</div>
+            <div class="chip" data-value="rental car" onclick="selectChip(this,'transport')">🚗 Rental Car</div>
+            <div class="chip" data-value="walking" onclick="selectChip(this,'transport')">🚶 Walking</div>
+          </div>
+          <input type="hidden" id="transport" value="public"/>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn-ghost" onclick="prevStep(3)">← Back</button>
+        <button class="btn-primary btn-next" onclick="nextStep(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Preferences -->
+    <div class="planner-step" id="step4">
+      <div class="step-header">
+        <div class="step-badge">Step 4 of 4</div>
+        <h1>What are your interests?</h1>
+        <p>Select all that apply — we'll tailor your experience.</p>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="interest-grid" id="interestGrid">
+            <div class="interest-card" data-value="nature" onclick="toggleInterest(this)">🌿<span>Nature</span></div>
+            <div class="interest-card" data-value="adventure" onclick="toggleInterest(this)">🧗<span>Adventure</span></div>
+            <div class="interest-card" data-value="photography" onclick="toggleInterest(this)">📷<span>Photography</span></div>
+            <div class="interest-card" data-value="food" onclick="toggleInterest(this)">🍜<span>Food</span></div>
+            <div class="interest-card" data-value="shopping" onclick="toggleInterest(this)">🛍<span>Shopping</span></div>
+            <div class="interest-card" data-value="history" onclick="toggleInterest(this)">🏛<span>History</span></div>
+            <div class="interest-card" data-value="religious" onclick="toggleInterest(this)">🕌<span>Religious</span></div>
+            <div class="interest-card" data-value="nightlife" onclick="toggleInterest(this)">🌃<span>Nightlife</span></div>
+            <div class="interest-card" data-value="art" onclick="toggleInterest(this)">🎨<span>Art</span></div>
+            <div class="interest-card" data-value="luxury" onclick="toggleInterest(this)">💎<span>Luxury</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn-ghost" onclick="prevStep(4)">← Back</button>
+        <button class="btn-primary btn-generate" onclick="generateTrip()">
+          <span id="generateBtnText">✨ Generate My Trip Plan</span>
+          <span id="generateBtnLoader" class="btn-loader" style="display:none">
+            <span class="spinner"></span> Planning your trip...
+          </span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end plannerContainer -->
+
+  <!-- ═══════════════════════════════════════════════════════════ RESULTS -->
+  <div class="results-container" id="resultsContainer" style="display:none">
+    <!-- Top bar -->
+    <div class="results-header">
+      <div>
+        <h1 id="resTripTitle">Your Trip Plan</h1>
+        <p id="resTripSubtitle" class="results-sub"></p>
+      </div>
+      <div class="results-actions">
+        <button class="btn-ghost" onclick="resetPlanner()">← Plan New Trip</button>
+        <button class="btn-primary" onclick="saveToDashboard()">Save to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="results-tabs">
+      <button class="rtab active" onclick="showTab('itinerary')">📅 Itinerary</button>
+      <button class="rtab" onclick="showTab('budget')">💰 Budget</button>
+      <button class="rtab" onclick="showTab('hotels')">🏨 Hotels</button>
+      <button class="rtab" onclick="showTab('weather')">🌤 Weather</button>
+      <button class="rtab" onclick="showTab('routes')">🗺️ Routes</button>
+      <button class="rtab" onclick="showTab('expenses')">📊 Expenses</button>
+    </div>
+
+    <!-- ITINERARY TAB -->
+    <div class="rtab-content active" id="tab-itinerary">
+      <div id="itineraryCards"></div>
+    </div>
+
+    <!-- BUDGET TAB -->
+    <div class="rtab-content" id="tab-budget">
+      <div class="budget-dashboard" id="budgetDashboard"></div>
+    </div>
+
+    <!-- HOTELS TAB -->
+    <div class="rtab-content" id="tab-hotels">
+      <div class="hotels-grid" id="hotelsGrid"></div>
+    </div>
+
+    <!-- WEATHER TAB -->
+    <div class="rtab-content" id="tab-weather">
+      <div class="weather-grid" id="weatherGrid"></div>
+    </div>
+
+    <!-- ROUTES TAB -->
+    <div class="rtab-content" id="tab-routes">
+      <div id="routesContainer"></div>
+    </div>
+
+    <!-- EXPENSES TAB -->
+    <div class="rtab-content" id="tab-expenses">
+      <div class="expense-panel" id="expensePanel"></div>
+    </div>
+
+  </div>
+</main>
+
+{% include '_auth_modals.html' %}
+
+<!-- ai_assistant.js is lazy-loaded after plan generation — not needed on initial page load -->
+<!-- Store the URL in a data attribute so planner.js can read it without Jinja2 in JS -->
+<meta name="ai-assistant-src" content="{{ url_for('static', filename='ai_assistant.js') ~ '?v=' ~ v }}"/>
+<script src="{{ url_for('static', filename='main.js') ~ '?v=' ~ v }}" defer></script>
+<script src="{{ url_for('static', filename='planner.js') ~ '?v=' ~ v }}" defer></script>
+</body>
+</html>

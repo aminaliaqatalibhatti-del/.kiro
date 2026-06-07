@@ -1,160 +1,194 @@
-from flask import Flask, jsonify, request, render_template
-from flask_cors import CORS
-import sys
+"""
+TripPilot AI — Application Entry Point
+Registers blueprints and serves HTML pages.
+Protected pages require an active session.
+Performance: gzip compression + HTTP cache headers.
+"""
 import os
-from werkzeug.utils import secure_filename
-import uuid 
+import sys
+import gzip
+import io
+import time
+from functools import wraps
 
-# Ensure backend path is included
+from flask      import Flask, render_template, session, redirect, jsonify, request
+from flask_cors import CORS
+
+# ── Path setup ────────────────────────────────────────────────────────────────
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.append(current_dir)
 
-# Import story logic
-try:
-    from story_trip import StoryTrip
-    print("story_trip.py loaded successfully")
-except Exception as e:
-    print("CRITICAL ERROR: Could not load story_trip.py")
-    print(f"Details: {e}")
-    sys.exit(1)
+import config
 
+from routes.auth         import auth_bp
+from routes.trips        import trips_bp
+from routes.destinations import destinations_bp
+from routes.ai           import ai_bp
+
+# ── Flask app ─────────────────────────────────────────────────────────────────
 template_dir = os.path.join(current_dir, 'template')
-static_dir = os.path.abspath(os.path.join(current_dir, '..', '..', 'frontend', 'static'))
+static_dir   = os.path.abspath(os.path.join(current_dir, '..', '..', 'frontend', 'static'))
+
 app = Flask(__name__, static_folder=static_dir, template_folder=template_dir)
-CORS(app)
+app.secret_key = config.SECRET_KEY
 
-print(f"Using template folder: {template_dir}")
-print(f"Using static folder: {static_dir}")
+# Force Jinja2 to reload templates from disk on every request — never serve stale HTML
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
 
+# Cache-bust version — changes every server restart, forces browsers to reload CSS/JS
+# This kills any stale cached assets from previous runs
+ASSET_VERSION = str(int(time.time()))
+app.jinja_env.globals['v'] = ASSET_VERSION
+
+# Restrict CORS to local dev origins; set ALLOWED_ORIGINS env var in production
+_allowed = os.environ.get('ALLOWED_ORIGINS', 'http://127.0.0.1:5000,http://localhost:5000').split(',')
+CORS(app, supports_credentials=True, origins=_allowed)
+
+app.register_blueprint(auth_bp)
+app.register_blueprint(trips_bp)
+app.register_blueprint(destinations_bp)
+app.register_blueprint(ai_bp)
+
+
+# ── Gzip compression ──────────────────────────────────────────────────────────
+@app.after_request
+def compress_response(response):
+    """Gzip JSON/HTML responses >1 KB. Never touches static files (Flask handles those)."""
+    # Skip static files — Flask's send_file already handles them correctly
+    if request.path.startswith('/static/'):
+        return response
+    # Skip if already encoded or not a compressible type
+    if response.headers.get('Content-Encoding'):
+        return response
+    if 'gzip' not in request.headers.get('Accept-Encoding', ''):
+        return response
+    ct = response.content_type or ''
+    if not (ct.startswith('application/json') or
+            ct.startswith('text/html') or
+            ct.startswith('text/plain')):
+        return response
+    data = response.get_data()
+    if len(data) < 1024:
+        return response
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode='wb', compresslevel=6) as f:
+        f.write(data)
+    compressed = buf.getvalue()
+    response.set_data(compressed)
+    response.headers['Content-Encoding'] = 'gzip'
+    response.headers['Content-Length']   = len(compressed)
+    response.headers.add('Vary', 'Accept-Encoding')
+    return response
+
+
+# ── HTTP cache headers ────────────────────────────────────────────────────────
+@app.after_request
+def add_cache_headers(response):
+    """
+    - Static assets: 7-day cache (versioned URLs bust the cache on change)
+    - HTML pages: no-cache — browser must revalidate every visit
+    - API: no-store — never cache API responses
+    """
+    path = request.path
+    if path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=604800, stale-while-revalidate=86400'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+    elif path.startswith('/api/'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
+        response.headers['Pragma']        = 'no-cache'
+    else:
+        # HTML pages — always revalidate so users get the latest version
+        response.headers['Cache-Control'] = 'no-cache, must-revalidate'
+        response.headers['Pragma']        = 'no-cache'
+    return response
+
+
+# ── Auth guard decorator ──────────────────────────────────────────────────────
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('user_id'):
+            return f(*args, **kwargs)
+        if request.headers.get('Accept', '').startswith('application/json'):
+            return jsonify({'status': 'error', 'message': 'Authentication required'}), 401
+        return redirect(f'/?next={request.path}&login=1')
+    return decorated
+
+
+# ── Error handlers ────────────────────────────────────────────────────────────
+@app.errorhandler(404)
+def not_found(e):
+    path = request.path
+    # Never swallow missing static files — return a real 404
+    if path.startswith('/static/'):
+        return jsonify({'status': 'error', 'message': f'Static file not found: {path}'}), 404
+    if path.startswith('/api/'):
+        return jsonify({'status': 'error', 'message': 'Endpoint not found'}), 404
+    # For page routes, return the home page (SPA fallback)
+    return render_template('index.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({'status': 'error', 'message': 'Internal server error'}), 500
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({'status': 'error', 'message': 'Method not allowed'}), 405
+
+
+# ── Public page routes ────────────────────────────────────────────────────────
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/get_story', methods=['GET'])
-def get_story():
-
-    # ✅ FIX: request is now imported properly
-    personality = int(request.args.get('personality', 1))
-    mood = int(request.args.get('mood', 1))
-    budget = int(request.args.get('budget', 1))
-    preference = int(request.args.get('preference', 1))
-
-    trip = StoryTrip(personality, mood, budget, preference)
-
-    trip.generate_world()
-    trip.generate_companion()
-    trip.generate_environment()
-    trip.generate_mission()
-    trip.generate_danger()
-    trip.generate_reward()
-    trip.generate_ending()
-
-    return jsonify({
-        "status": "success",
-        "story": trip.show_experience(),
-        "image": trip.image_file
-    })
+@app.route('/explore')
+def explore():
+    return render_template('explore.html')
 
 
-@app.route('/save_story', methods=['POST'])
-def save_story():
-    data = request.get_json() or {}
-    story_text = data.get('story', '')
-    image = data.get('image', '')
+# ── Protected page routes ─────────────────────────────────────────────────────
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
-    if not story_text:
-        return jsonify({"status": "error", "message": "No story provided"}), 400
-
-    # Ensure directory for saved stories exists inside static folder so files are served
-    saved_dir = os.path.join(static_dir, 'saved_stories')
-    os.makedirs(saved_dir, exist_ok=True)
-
-    # Create a safe unique filename
-    file_id = str(uuid.uuid4())
-    text_filename = secure_filename(f"story_{file_id}.txt")
-    json_filename = secure_filename(f"story_{file_id}.json")
-
-    # Write text file
-    text_path = os.path.join(saved_dir, text_filename)
-    with open(text_path, 'w', encoding='utf-8') as f:
-        f.write(story_text)
-
-    # Write metadata JSON
-    meta = {
-        "story": story_text,
-        "image": image
-    }
-    json_path = os.path.join(saved_dir, json_filename)
-    with open(json_path, 'w', encoding='utf-8') as f:
-        import json as _json
-        _json.dump(meta, f, ensure_ascii=False, indent=2)
-
-    file_url = f"{request.url_root.rstrip('/')}{app.static_url_path}/saved_stories/{text_filename}"
-
-    return jsonify({"status": "success", "url": file_url})
+@app.route('/planner')
+def planner():
+    return render_template('planner.html')
 
 
-@app.route('/download_story/<filename>', methods=['GET'])
-def download_story(filename):
-    # Serve from the saved_stories directory under static
-    saved_dir = os.path.join(static_dir, 'saved_stories')
-    return app.send_static_file(f"saved_stories/{filename}")
+# ── Route Planning API ────────────────────────────────────────────────────────
+@app.route('/api/routes', methods=['GET'])
+def get_routes():
+    from trip_engine import TripEngine
+    from utils       import safe_int
+
+    destination = request.args.get('destination', '').strip()
+    transport   = request.args.get('transport', 'public')
+    travelers   = safe_int(request.args.get('travelers', 1), min_val=1)
+
+    days        = safe_int(request.args.get('days', 3), min_val=1)
+
+    if not destination:
+        return jsonify({'status': 'error', 'message': 'destination required'}), 400
+
+    engine = TripEngine(
+        destination   = destination,
+        days          = days,
+        budget        = 1000,
+        travel_type   = 'solo',
+        interests     = [],
+        accommodation = 'hotel',
+        transport     = transport,
+        start_date    = '',
+        travelers     = travelers,
+    )
+    return jsonify({'status': 'success', 'routes': engine.generate_routes()})
 
 
-@app.route('/list_stories', methods=['GET'])
-def list_stories():
-    saved_dir = os.path.join(static_dir, 'saved_stories')
-    os.makedirs(saved_dir, exist_ok=True)
-
-    files = []
-    for name in sorted(os.listdir(saved_dir), reverse=True):
-        # only show downloadable story text files (.txt)
-        if name.lower().endswith('.txt'):
-            url = f"{request.url_root.rstrip('/')}{app.static_url_path}/saved_stories/{name}"
-            files.append({"name": name, "url": url})
-
-    return jsonify({"status": "success", "files": files})
-
-
-@app.route('/delete_story', methods=['POST'])
-def delete_story():
-    data = request.get_json() or {}
-    filename = data.get('filename')
-    if not filename:
-        return jsonify({"status": "error", "message": "filename required"}), 400
-
-    safe_name = secure_filename(filename)
-    saved_dir = os.path.join(static_dir, 'saved_stories')
-    target_path = os.path.join(saved_dir, safe_name)
-
-    # Prevent path traversal
-    try:
-        if os.path.commonpath([os.path.abspath(saved_dir)]) != os.path.commonpath([os.path.abspath(saved_dir), os.path.abspath(target_path)]):
-            return jsonify({"status": "error", "message": "Invalid filename"}), 400
-    except Exception:
-        return jsonify({"status": "error", "message": "Invalid filename"}), 400
-
-    if not os.path.exists(target_path):
-        return jsonify({"status": "error", "message": "File not found"}), 404
-
-    try:
-        os.remove(target_path)
-        # also try removing companion file (.txt <-> .json)
-        base, ext = os.path.splitext(safe_name)
-        for alt_ext in ('.txt', '.json'):
-            alt = os.path.join(saved_dir, base + alt_ext)
-            if os.path.exists(alt):
-                try:
-                    os.remove(alt)
-                except Exception:
-                    pass
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Could not delete: {e}"}), 500
-
-    return jsonify({"status": "success"})
-
-
+# ── Run ───────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    print("Server starting on http://127.0.0.1:5000")
-    app.run(debug=True, port=5000)
+    print(f"TripPilot AI — http://127.0.0.1:5000  (debug={config.DEBUG})")
+    app.run(debug=config.DEBUG, port=5000)

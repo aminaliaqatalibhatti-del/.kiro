@@ -1,87 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Story Generator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@1&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <title>TripPilot AI — Intelligent Travel Planning</title>
+  <meta name="description" content="Plan smarter. Travel better. AI-powered travel planning that manages your entire journey."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<!-- Inter: only weights actually used (400/500/600/700/800). Saves ~35% of font payload -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') ~ '?v=' ~ v }}"/>
+  <!-- Critical CSS: dark background renders instantly before main.css parses -->
+  <style>html,body{background:#0a0a0f;color:#f1f5f9;margin:0}</style>
 </head>
-<body>
+<body class="has-bottom-nav">
 
-<div class="overlay"></div>
-
-<audio id="bg-music" loop></audio>
-
-
-<button id="music-toggle" onclick="toggleMusic()">🎵 Music: Off</button>
-
-<div class="container">
-    <div id="quiz-page" class="page active">
-    <p class="subtitle">✦ AN ENCHANTED PORTAL ✦</p>
-    <h1>Your Fictional Travel Realm</h1>
-    <p class="instruction">Select your traits to reveal your fate</p>
-
-    <div class="quiz-section">
-        <label>I — PERSONALITY</label>
-        <div class="option-group">
-            <div class="option selected" data-value="1" onclick="selectOption('personality', this)">🌙 Calm</div>
-            <div class="option" data-value="2" onclick="selectOption('personality', this)">🔥 Chaotic</div>
-        </div>
-
-        <label>II — MOOD</label>
-        <div class="option-group">
-            <div class="option selected" data-value="1" onclick="selectOption('mood', this)">Peaceful</div>
-            <div class="option" data-value="2" onclick="selectOption('mood', this)">Mysterious</div>
-            <div class="option" data-value="3" onclick="selectOption('mood', this)">Dangerous</div>
-            <div class="option" data-value="4" onclick="selectOption('mood', this)">Despair</div>
-        </div>
-
-        <label>III — BUDGET</label>
-        <div class="option-group">
-            <div class="option selected" data-value="1" onclick="selectOption('budget', this)">Low</div>
-            <div class="option" data-value="2" onclick="selectOption('budget', this)">Medium</div>
-            <div class="option" data-value="3" onclick="selectOption('budget', this)">High</div>
-        </div>
-
-        <label>IV — PREFERENCE</label>
-        <div class="option-group">
-            <div class="option selected" data-value="1" onclick="selectOption('preference', this)">Healing</div>
-            <div class="option" data-value="2" onclick="selectOption('preference', this)">Battle</div>
-            <div class="option" data-value="3" onclick="selectOption('preference', this)">Explore</div>
-        </div>
-
-        <input type="hidden" id="personality" value="1">
-        <input type="hidden" id="mood" value="1">
-        <input type="hidden" id="budget" value="1">
-        <input type="hidden" id="preference" value="1">
+<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">✈</span>
+      <span class="logo-text">TripPilot <span class="logo-ai">AI</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#destinations">Destinations</a></li>
+      <li><a href="/explore">Explore</a></li>
+      <li><a href="/planner" class="nav-cta">Plan a Trip</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-ghost" onclick="openModal('loginModal')">Log in</button>
+      <button class="btn-primary" onclick="openModal('registerModal')">Sign up</button>
     </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-    <button class="generate-btn" onclick="generateJourney()">GENERATE STORY</button>
-    
-    <div class="saved-section" style="margin-top:20px; background:rgba(255,255,255,0.03); padding:12px; border-radius:8px; text-align:center;">
-        <button class="generate-btn" onclick="showPage('saved-page')">View Saved Stories</button>
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-gradient"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span>AI-Powered Travel Intelligence</span>
     </div>
-</div>
-
-<div id="story-page" class="page">
-    <p class="subtitle">✦ YOUR DESTINY REVEALED ✦</p>
-
-    <div class="output-box">
-        <img id="story-image" src="" alt="Story visual" style="display: none; width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid rgba(255, 215, 0, 0.3);">
-        <p id="story-display">Your journey awaits...</p>
+    <h1 class="hero-title">
+      Plan Smarter.<br/>
+      <span class="gradient-text">Travel Better.</span>
+    </h1>
+    <p class="hero-subtitle">
+      Your AI-powered travel companion that plans, optimizes, and manages every journey — from itinerary to expenses, all in one place.
+    </p>
+    <div class="hero-actions">
+      <a href="/planner" class="btn-hero-primary">
+        <span>Start Planning</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#features" class="btn-hero-ghost">See how it works</a>
     </div>
-    <button class="generate-btn back-btn" onclick="showPage('quiz-page')">RETURN TO PORTAL</button>
-</div>
-
-<div id="saved-page" class="page">
-    <p class="subtitle">✦ SAVED STORIES ✦</p>
-    <div class="output-box" style="padding: 20px;">
-        <div id="saved-list">Loading saved stories...</div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Destinations</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Itinerary Engine</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">360°</span><span class="stat-label">Trip Management</span></div>
     </div>
-    <button class="generate-btn back-btn" onclick="showPage('quiz-page')">BACK TO PORTAL</button>
-</div>
+  </div>
+  <!-- Search box -->
+  <div class="hero-search-wrap">
+    <div class="hero-search">
+      <div class="search-field">
+        <span class="search-icon">📍</span>
+        <input type="text" id="heroSearch" placeholder="Where do you want to go?" autocomplete="off"/>
+      </div>
+      <button class="search-btn" onclick="heroSearch()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search
+      </button>
+    </div>
+    <div class="search-suggestions" id="searchSuggestions"></div>
+  </div>
+</section>
 
-<script src="{{ url_for('static', filename='script.js')}}"></script>
+<!-- ── PROBLEM STATEMENT ─────────────────────────────────────────────────── -->
+<section class="problem-section">
+  <div class="container">
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">Stop juggling <span class="gradient-text">7 different apps</span></h2>
+    <p class="section-sub">Most travelers use a patchwork of disconnected tools. TripPilot AI replaces them all.</p>
+    <div class="apps-grid">
+      <div class="app-card old">
+        <span>🗺️</span><span>Navigation App</span>
+      </div>
+      <div class="app-card old">
+        <span>🏨</span><span>Hotel Website</span>
+      </div>
+      <div class="app-card old">
+        <span>☁️</span><span>Weather App</span>
+      </div>
+      <div class="app-card old">
+        <span>📊</span><span>Budget Spreadsheet</span>
+      </div>
+      <div class="app-card old">
+        <span>📝</span><span>Notes App</span>
+      </div>
+      <div class="app-card old">
+        <span>🌐</span><span>Travel Blogs</span>
+      </div>
+      <div class="app-card old">
+        <span>🗓️</span><span>Calendar App</span>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="app-card new-card">
+        <span>✈️</span>
+        <strong>TripPilot AI</strong>
+        <span class="chip">All-in-one</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ──────────────────────────────────────────────────────────── -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="section-label">Platform Features</div>
+    <h2 class="section-title">Everything your trip needs,<br/><span class="gradient-text">in one place</span></h2>
+    <div class="features-grid">
+
+      <div class="feature-card featured">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Itinerary Generator</h3>
+        <p>Tell us your destination, budget, and interests. Our AI builds a complete day-by-day plan with timing, routes, and restaurants.</p>
+        <a href="/planner" class="feature-link">Generate a plan →</a>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Budget Intelligence</h3>
+        <p>Real-time financial dashboard breaks down accommodation, food, transport, and attractions costs with predicted vs. actual spend.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌤</div>
+        <h3>Weather Intelligence</h3>
+        <p>Day-by-day forecasts with clothing recommendations. AI automatically suggests itinerary adjustments for bad weather days.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🏨</div>
+        <h3>Smart Accommodation</h3>
+        <p>Curated hotel and accommodation recommendations filtered by your budget, travel style, and proximity to attractions.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Smart Route Planner</h3>
+        <p>Compare fastest, cheapest, and scenic routes. Parking availability and walking distances for every destination.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Expense Tracker</h3>
+        <p>Log and categorise every expense on the go. Visual analytics show spending patterns and remaining budget in real time.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── DESTINATIONS ──────────────────────────────────────────────────────── -->
+<section class="destinations-section" id="destinations">
+  <div class="container">
+    <div class="section-label">Explore</div>
+    <h2 class="section-title">Discover where to go <span class="gradient-text">next</span></h2>
+    <p class="section-sub">AI-curated destinations matched to your interests, budget, and travel style.</p>
+    <div class="dest-grid" id="destGrid">
+      <!-- Populated by JS -->
+    </div>
+    <div class="dest-more">
+      <a href="/explore" class="btn-outline">Explore all destinations</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────────────────────────────────── -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-label">Process</div>
+    <h2 class="section-title">Your trip in <span class="gradient-text">3 simple steps</span></h2>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <h3>Tell us about yourself</h3>
+          <p>Enter your travel preferences, budget, dates, and interests. Takes less than 2 minutes.</p>
+        </div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <h3>AI builds your plan</h3>
+          <p>Our engine generates a full itinerary, budget breakdown, hotel picks, and weather forecast instantly.</p>
+        </div>
+      </div>
+      <div class="step-line"></div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <h3>Travel & track</h3>
+          <p>Use your dashboard to manage expenses, adjust plans, and monitor your entire trip in real time.</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:48px;">
+      <a href="/planner" class="btn-primary btn-lg">Start Your Trip →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">TripPilot <span class="logo-ai">AI</span></span>
+        <p>The intelligent travel operating system for modern explorers.</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h4>Platform</h4>
+          <a href="/planner">Trip Planner</a>
+          <a href="/explore">Destinations</a>
+          <a href="/dashboard">Dashboard</a>
+        </div>
+        <div>
+          <h4>Features</h4>
+          <a href="#">Budget Tracker</a>
+          <a href="#">Weather Intel</a>
+          <a href="#">Route Planner</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 TripPilot AI. Built for explorers everywhere.</p>
+    </div>
+  </div>
+</footer>
+
+{% include '_auth_modals.html' %}
+
+<!-- ── Mobile Bottom Nav ──────────────────────────────────── -->
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="/" class="active" aria-current="page">
+    <span class="nav-icon">🏠</span>
+    <span>Home</span>
+  </a>
+  <a href="/planner">
+    <span class="nav-icon">✈️</span>
+    <span>Plan</span>
+  </a>
+  <a href="/explore">
+    <span class="nav-icon">🌍</span>
+    <span>Explore</span>
+  </a>
+  <a href="/dashboard">
+    <span class="nav-icon">📊</span>
+    <span>Dashboard</span>
+  </a>
+</nav>
+
+<script src="{{ url_for('static', filename='main.js') ~ '?v=' ~ v }}" defer></script>
 </body>
 </html>

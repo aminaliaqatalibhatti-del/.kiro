@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <title>Dashboard — TripPilot AI</title>
+  <meta name="description" content="Manage your trips, track expenses, and monitor spending analytics — all in your TripPilot AI dashboard."/>
+  <meta property="og:title" content="Dashboard — TripPilot AI"/>
+  <meta property="og:description" content="Manage your trips and track expenses with AI-powered insights."/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <!-- Inter: only weights actually used -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') ~ '?v=' ~ v }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') ~ '?v=' ~ v }}"/>
+  <!-- Critical CSS: dark background renders instantly before main.css parses -->
+  <style>html,body{background:#0a0a0f;color:#f1f5f9;margin:0}</style>
+</head>
+<body class="planner-body has-bottom-nav">
+
+<nav class="navbar navbar-solid">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">✈</span>
+      <span class="logo-text">TripPilot <span class="logo-ai">AI</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/planner">Planner</a></li>
+      <li><a href="/explore">Explore</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-ghost" onclick="openModal('loginModal')">Log in</button>
+      <button class="btn-primary" onclick="openModal('registerModal')">Sign up</button>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<main class="dash-main">
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="sidebar-user" id="sidebarUser">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="user-name" id="userName">Traveler</div>
+        <div class="user-email" id="userEmail">—</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="snav-item active" onclick="showDashTab('overview',this)">
+        <span>📊</span> Overview
+      </a>
+      <a href="#" class="snav-item" onclick="showDashTab('trips',this)">
+        <span>✈️</span> My Trips
+      </a>
+      <a href="#" class="snav-item" onclick="showDashTab('analytics',this)">
+        <span>💰</span> Spending Analytics
+      </a>
+      <a href="#" class="snav-item" onclick="showDashTab('saved',this)">
+        <span>🔖</span> Saved Destinations
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/planner" class="btn-primary btn-full" style="text-align:center; display:block;">+ New Trip</a>
+      <button class="btn-ghost btn-full" style="margin-top:8px;" onclick="handleLogout()">Log out</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="dash-content">
+
+    <!-- OVERVIEW TAB -->
+    <div class="dash-tab active" id="tab-overview">
+      <div class="dash-welcome">
+        <h1>Good <span id="timeGreeting">day</span>, <span id="welcomeName">Traveler</span> 👋</h1>
+        <p>Here's your travel overview.</p>
+      </div>
+      <!-- Stats cards -->
+      <div class="dash-stats" id="dashStats">
+        <div class="stat-card">
+          <div class="stat-icon">✈️</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTrips">0</span>
+            <span class="stat-label">Total Trips</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statSpent">$0</span>
+            <span class="stat-label">Total Spent</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌍</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statDests">0</span>
+            <span class="stat-label">Destinations</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-info">
+            <span class="stat-value" id="statDays">0</span>
+            <span class="stat-label">Days Travelled</span>
+          </div>
+        </div>
+      </div>
+      <!-- Recent trips -->
+      <div class="dash-section">
+        <div class="dash-section-header">
+          <h2>Recent Trips</h2>
+          <a href="#" onclick="showDashTab('trips',null)">View all →</a>
+        </div>
+        <div id="recentTrips" class="trips-list"></div>
+      </div>
+      <!-- AI suggestions -->
+      <div class="dash-section">
+        <div class="dash-section-header">
+          <h2>✨ AI Suggestions</h2>
+        </div>
+        <div class="ai-suggestions" id="aiSuggestions"></div>
+      </div>
+    </div>
+
+    <!-- TRIPS TAB -->
+    <div class="dash-tab" id="tab-trips">
+      <div class="dash-welcome">
+        <h1>My Trips</h1>
+        <p>All your planned and completed journeys.</p>
+      </div>
+      <div id="allTripsContainer" class="trips-list full"></div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="dash-tab" id="tab-analytics">
+      <div class="dash-welcome">
+        <h1>Spending Analytics</h1>
+        <p>Track where your travel budget goes.</p>
+      </div>
+      <div id="analyticsContainer"></div>
+    </div>
+
+    <!-- SAVED TAB -->
+    <div class="dash-tab" id="tab-saved">
+      <div class="dash-welcome">
+        <h1>Saved Destinations</h1>
+        <p>Places you want to visit.</p>
+      </div>
+      <div id="savedDestContainer" class="dest-grid"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Trip detail modal -->
+<div class="modal-overlay" id="tripModal" style="align-items:flex-start; padding-top:60px;">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeModal('tripModal')">✕</button>
+    <div id="tripModalContent"></div>
+  </div>
+</div>
+
+{% include '_auth_modals.html' %}
+
+<!-- ── Mobile Bottom Nav ──────────────────────────────────── -->
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="/">
+    <span class="nav-icon">🏠</span>
+    <span>Home</span>
+  </a>
+  <a href="/planner">
+    <span class="nav-icon">✈️</span>
+    <span>Plan</span>
+  </a>
+  <a href="/explore">
+    <span class="nav-icon">🌍</span>
+    <span>Explore</span>
+  </a>
+  <a href="/dashboard" class="active" aria-current="page">
+    <span class="nav-icon">📊</span>
+    <span>Dashboard</span>
+  </a>
+</nav>
+
+<script src="{{ url_for('static', filename='main.js') ~ '?v=' ~ v }}" defer></script>
+<script src="{{ url_for('static', filename='dashboard.js') ~ '?v=' ~ v }}" defer></script>
+</body>
+</html>
