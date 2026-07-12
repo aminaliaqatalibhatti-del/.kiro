@@ -133,7 +133,7 @@ http://localhost:3000
 
 ## 👤 Author
 
-**Amin Ali Aqat Ali Bhatti**
+**Amina Liaqat Ali Bhatti**
 - GitHub: [@aminaliaqatalibhatti-del](https://github.com/aminaliaqatalibhatti-del)
 
 ---
