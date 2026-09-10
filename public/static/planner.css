@@ -174,7 +174,7 @@
   font-size: 18px;
   font-weight: 300;
   color: var(--text-secondary);
-  background: rgba(255,255,255,0.03);
+  background: rgba(180,50,220,0.04);
   border: none;
   transition: all var(--t-fast);
 }
@@ -273,7 +273,7 @@
 }
 .budget-level-btn {
   padding: 6px 14px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(180,50,220,0.06);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
   font-size: var(--text-sm);
@@ -311,7 +311,7 @@
   gap: 10px;
   transition: background var(--t-fast);
 }
-.dest-ac-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.dest-ac-item:hover { background: rgba(180,50,220,0.07); color: var(--text-primary); }
 
 .form-group { position: relative; }
 
@@ -398,7 +398,7 @@
   white-space: nowrap;
   min-width: fit-content;
 }
-.rtab:hover { color: var(--text-secondary); background: rgba(255,255,255,0.04); }
+.rtab:hover { color: var(--text-secondary); background: rgba(180,50,220,0.06); }
 .rtab.active { background: var(--primary); color: #fff; }
 
 .rtab-content { display: none; }
@@ -461,7 +461,7 @@
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(180,50,220,0.06);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
   font-size: 13px;
@@ -616,7 +616,7 @@
 .utilization-pct   { font-size: 20px; font-weight: 800; color: var(--text-primary); }
 .progress-bar {
   height: 10px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(180,50,220,0.08);
   border-radius: var(--r-full);
   overflow: hidden;
 }
@@ -651,11 +651,11 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(180,50,220,0.06);
   flex-shrink: 0;
 }
 .breakdown-label { flex: 1; font-size: var(--text-base); color: var(--text-secondary); font-weight: 500; }
-.breakdown-bar-wrap { flex: 2; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.breakdown-bar-wrap { flex: 2; height: 6px; background: rgba(180,50,220,0.08); border-radius: 3px; overflow: hidden; }
 .breakdown-bar { height: 100%; border-radius: 3px; transition: width 600ms ease; }
 .breakdown-amount { font-size: var(--text-base); font-weight: 700; color: var(--text-primary); min-width: 80px; text-align: right; }
 
@@ -715,7 +715,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(180,50,220,0.04) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2s ease infinite;
 }
@@ -727,7 +727,7 @@
 .hotel-stars {
   position: absolute;
   top: 10px; right: 10px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(26,10,46,0.12);
   backdrop-filter: blur(4px);
   border-radius: var(--r-full);
   padding: 3px 8px;
@@ -747,7 +747,7 @@
 }
 .hotel-amenity {
   padding: 2px 8px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(180,50,220,0.06);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
   font-size: var(--text-xs);

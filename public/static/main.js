@@ -249,8 +249,65 @@ async function loadHomeDests() {
   }
 }
 
+// ── Unsplash destination image map (free, no API key needed) ──
+const DEST_IMAGES = {
+  'paris':         'https://images.unsplash.com/photo-1499856871958-5b9357976b82?w=400&q=80',
+  'tokyo':         'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&q=80',
+  'dubai':         'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80',
+  'bali':          'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&q=80',
+  'new york':      'https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?w=400&q=80',
+  'istanbul':      'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=400&q=80',
+  'rome':          'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80',
+  'maldives':      'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=400&q=80',
+  'hunza':         'https://images.unsplash.com/photo-1626082927389-6cd097cee6a5?w=400&q=80',
+  'skardu':        'https://images.unsplash.com/photo-1580502304784-8985b7eb7260?w=400&q=80',
+  'fairy meadows': 'https://images.unsplash.com/photo-1585016495481-8c4e6e809f02?w=400&q=80',
+  'naran':         'https://images.unsplash.com/photo-1625244724120-1fd1d34d00f6?w=400&q=80',
+  'swat':          'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=400&q=80',
+  'murree':        'https://images.unsplash.com/photo-1583922606661-0822ed0bd916?w=400&q=80',
+  'lahore':        'https://images.unsplash.com/photo-1582461833047-2aeb4f9a1203?w=400&q=80',
+  'makkah':        'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=400&q=80',
+  'madinah':       'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=400&q=80',
+  'karachi':       'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=400&q=80',
+  'antalya':       'https://images.unsplash.com/photo-1524820801657-fd59673fbb05?w=400&q=80',
+  'doha':          'https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=400&q=80',
+  'kuala lumpur':  'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=400&q=80',
+  'singapore':     'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&q=80',
+  'bangkok':       'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&q=80',
+  'seoul':         'https://images.unsplash.com/photo-1538485399081-7191377e8241?w=400&q=80',
+  'london':        'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80',
+  'barcelona':     'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&q=80',
+  'amsterdam':     'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80',
+  'los angeles':   'https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=400&q=80',
+  'toronto':       'https://images.unsplash.com/photo-1517090504586-fde19ea6066f?w=400&q=80',
+  'sydney':        'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&q=80',
+  'kyoto':         'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80',
+  'prague':        'https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80',
+  'cairo':         'https://images.unsplash.com/photo-1572252009286-268acec5ca0a?w=400&q=80',
+  'cape town':     'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=400&q=80',
+  'marrakech':     'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=400&q=80',
+  'vienna':        'https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80',
+  'santorini':     'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80',
+  'phuket':        'https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=400&q=80',
+  'iceland':       'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&q=80',
+  'lisbon':        'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=400&q=80',
+  'florence':      'https://images.unsplash.com/photo-1541370976299-4d24be63b9cc?w=400&q=80',
+  'athens':        'https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80',
+  'banff':         'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=400&q=80',
+  'patagonia':     'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&q=80',
+  'queenstown':    'https://images.unsplash.com/photo-1507699622108-4be3abd695ad?w=400&q=80',
+  'interlaken':    'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=400&q=80',
+  'monaco':        'https://images.unsplash.com/photo-1562883676-8c7feb83f09b?w=400&q=80',
+  'gwadar':        'https://images.unsplash.com/photo-1596003906949-67221c17b9e4?w=400&q=80',
+};
+
+function getDestImage(name) {
+  const key = (name || '').toLowerCase();
+  return DEST_IMAGES[key] || `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80`;
+}
+
 function renderDestCard(d, showMatch = false) {
-  const emoji = DEST_EMOJIS[d.name?.toLowerCase()] || DEST_EMOJIS[(d.id || '').replace('_',' ')] || '🌍';
+  const imgUrl = getDestImage(d.name);
   const tags  = (d.tags || []).slice(0, 3).map(t => `<span class="dest-tag">${t}</span>`).join('');
   const budgetLow = d.daily_budget?.low || d.estimated_daily_cost || 0;
   const matchBadge = showMatch && d.match_pct
@@ -259,7 +316,7 @@ function renderDestCard(d, showMatch = false) {
   return `
     <div class="dest-card" onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
       <div class="dest-card-img">
-        ${emoji}
+        <img src="${imgUrl}" alt="${d.name}" loading="lazy" onerror="this.parentElement.style.background='linear-gradient(135deg,#e040fb22,#00e5ff22)'; this.style.display='none'"/>
         <div class="dest-card-img-overlay"></div>
         ${matchBadge}
       </div>

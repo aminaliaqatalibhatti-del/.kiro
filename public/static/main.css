@@ -17,17 +17,17 @@
   --accent3:        #ffd93d;   /* Gen-Z yellow                   */
 
   /* Neutrals — very deep, warm-tinted dark */
-  --bg:             #080810;
-  --bg-2:           #0d0d1a;
-  --bg-3:           #12121f;
-  --bg-card:        #16162a;
-  --border:         rgba(224,64,251,0.15);
-  --border-light:   rgba(255,255,255,0.04);
+  --bg:             #f8f4ff;
+  --bg-2:           #f0eaff;
+  --bg-3:           #e8dffa;
+  --bg-card:        #ffffff;
+  --border:         rgba(180,50,220,0.18);
+  --border-light:   rgba(180,50,220,0.07);
 
   /* Text */
-  --text-primary:   #f0eaff;   /* soft lavender-white            */
-  --text-secondary: #b8a9d4;
-  --text-muted:     #7a6b94;
+  --text-primary:   #1a0a2e;   /* soft lavender-white            */
+  --text-secondary: #5a4872;
+  --text-muted:     #9b89b8;
 
   /* Status */
   --success:  #00e5a0;
@@ -99,8 +99,8 @@ input, select, textarea { font-family: var(--font-sans); }
 /* ── Scrollbar ────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-thumb { background: rgba(180,50,220,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(180,50,220,0.45); }
 
 /* ── Typography ───────────────────────────────────────────── */
 .gradient-text {
@@ -150,7 +150,7 @@ input, select, textarea { font-family: var(--font-sans); }
   gap: var(--sp-sm);
   padding: 10px 20px;
   color: var(--text-secondary);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(180,50,220,0.25);
   border-radius: var(--r-md);
   font-size: var(--text-base);
   font-weight: 500;
@@ -224,7 +224,7 @@ input:disabled, select:disabled, textarea:disabled {
 
 .navbar.scrolled,
 .navbar-solid {
-  background: rgba(10,10,15,0.92);
+  background: rgba(248,244,255,0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
@@ -277,7 +277,7 @@ input:disabled, select:disabled, textarea:disabled {
   border-radius: var(--r-sm);
   transition: all var(--t-fast);
 }
-.nav-links a:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.nav-links a:hover { color: var(--text-primary); background: rgba(255,255,255,0.85); }
 
 .nav-cta {
   color: var(--primary-light) !important;
@@ -334,21 +334,21 @@ input:disabled, select:disabled, textarea:disabled {
 .hero-gradient {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(224,64,251,0.22) 0%, transparent 70%),
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(224,64,251,0.18) 0%, transparent 70%),
               radial-gradient(ellipse 60% 50% at 80% 60%, rgba(0,229,255,0.12) 0%, transparent 60%),
               radial-gradient(ellipse 50% 40% at 20% 80%, rgba(255,107,107,0.1) 0%, transparent 60%);
 }
 .hero-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.7;
+  filter: blur(90px);
+  opacity: 0.45;
   will-change: transform;
   animation: float 8s ease-in-out infinite;
 }
-.orb-1 { width: 400px; height: 400px; background: rgba(224,64,251,0.18); top: -100px; left: 10%; animation-delay: 0s; }
-.orb-2 { width: 300px; height: 300px; background: rgba(0,229,255,0.14);  top: 30%;  right: 5%; animation-delay: 3s; }
-.orb-3 { width: 250px; height: 250px; background: rgba(255,107,107,0.12); bottom: 10%; left: 30%; animation-delay: 6s; }
+.orb-1 { width: 500px; height: 500px; background: rgba(224,64,251,0.35); top: -150px; left: 5%; animation-delay: 0s; }
+.orb-2 { width: 350px; height: 350px; background: rgba(0,229,255,0.25);  top: 30%;  right: 0%; animation-delay: 3s; }
+.orb-3 { width: 300px; height: 300px; background: rgba(255,107,107,0.2); bottom: 5%; left: 25%; animation-delay: 6s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0) scale(1); }
@@ -476,7 +476,7 @@ input:disabled, select:disabled, textarea:disabled {
 .hero-search {
   display: flex;
   align-items: center;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
@@ -529,7 +529,7 @@ input:disabled, select:disabled, textarea:disabled {
   position: absolute;
   top: calc(100% + 8px);
   left: 0; right: 0;
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
@@ -611,7 +611,7 @@ input:disabled, select:disabled, textarea:disabled {
   transition: all var(--t-normal);
 }
 .app-card.old {
-  background: rgba(255,255,255,0.03);
+  background: rgba(180,50,220,0.04);
   border: 1px solid var(--border);
   color: var(--text-muted);
   text-decoration: line-through;
@@ -661,7 +661,7 @@ input:disabled, select:disabled, textarea:disabled {
 }
 
 .feature-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   padding: var(--sp-xl);
@@ -724,7 +724,7 @@ input:disabled, select:disabled, textarea:disabled {
 /* ── Destination Cards ────────────────────────────────────── */
 .destinations-section {
   padding: var(--sp-3xl) var(--sp-lg);
-  background: var(--bg-2);
+  background: linear-gradient(135deg, #f0eaff, #fce4ff);
   text-align: center;
 }
 
@@ -736,7 +736,7 @@ input:disabled, select:disabled, textarea:disabled {
 }
 
 .dest-card {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   overflow: hidden;
@@ -753,7 +753,7 @@ input:disabled, select:disabled, textarea:disabled {
 .dest-card-img {
   width: 100%;
   height: 200px;
-  background: linear-gradient(135deg, var(--bg-3), var(--bg-2));
+  background: linear-gradient(135deg, #f0eaff, #fce4ff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -761,10 +761,21 @@ input:disabled, select:disabled, textarea:disabled {
   position: relative;
   overflow: hidden;
 }
+.dest-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--t-slow);
+}
+.dest-card:hover .dest-card-img img {
+  transform: scale(1.07);
+}
 .dest-card-img-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10,10,15,0.8), transparent);
+  background: linear-gradient(to top, rgba(26,10,46,0.55) 0%, transparent 60%);
+  pointer-events: none;
 }
 .dest-card-match {
   position: absolute;
@@ -956,7 +967,7 @@ input:disabled, select:disabled, textarea:disabled {
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .modal {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   padding: var(--sp-xl);
@@ -1012,7 +1023,7 @@ input:disabled, select:disabled, textarea:disabled {
 .modal form input {
   width: 100%;
   background: var(--bg-3);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(180,50,220,0.25);
   border-radius: var(--r-md);
   padding: 11px 14px;
   color: var(--text-primary);
@@ -1078,7 +1089,7 @@ input:disabled, select:disabled, textarea:disabled {
 
 /* ── Explore Filters ──────────────────────────────────────── */
 .explore-filters {
-  background: var(--bg-card);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   padding: var(--sp-xl);
@@ -1131,8 +1142,8 @@ input:disabled, select:disabled, textarea:disabled {
 }
 .toast {
   padding: 12px 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 1px solid rgba(180,50,220,0.25);
   border-radius: var(--r-md);
   font-size: var(--text-base);
   font-weight: 500;
@@ -1294,7 +1305,7 @@ input:disabled, select:disabled, textarea:disabled {
     align-items: center;
   }
   .nav-links.mobile-open li a:hover {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.85);
   }
   .nav-auth.mobile-open {
     display: flex !important;

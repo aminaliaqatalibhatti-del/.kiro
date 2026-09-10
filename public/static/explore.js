@@ -121,20 +121,27 @@ function getEmoji(d) {
       || '🌍';
 }
 
+// ── Get destination image (uses DEST_IMAGES from main.js) ──────
+function getDestImg(d) {
+  const key = (d.name || '').toLowerCase();
+  if (typeof DEST_IMAGES !== 'undefined' && DEST_IMAGES[key]) return DEST_IMAGES[key];
+  return `https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80`;
+}
+
 // ── All-destinations card (no match score) ─────────────────────
 function renderDestCard(d) {
-  const emoji  = getEmoji(d);
+  const imgUrl = getDestImg(d);
   const tags   = (d.tags || []).slice(0, 3).map(t => `<span class="dest-tag">${t}</span>`).join('');
   const budget = d.daily_budget?.low || 0;
 
-  const diffColors = { easy: '#10b981', moderate: '#f59e0b', hard: '#ef4444' };
-  const diffColor  = diffColors[d.difficulty] || '#6366f1';
+  const diffColors = { easy: '#00e5a0', moderate: '#ffd93d', hard: '#ff6b6b' };
+  const diffColor  = diffColors[d.difficulty] || '#e040fb';
 
   return `
     <div class="dest-card"
          onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
       <div class="dest-card-img">
-        ${emoji}
+        <img src="${imgUrl}" alt="${d.name}" loading="lazy" onerror="this.style.display='none'"/>
         <div class="dest-card-img-overlay"></div>
         <div class="dest-card-match"
              style="background:${diffColor}cc;text-transform:capitalize">
@@ -155,13 +162,12 @@ function renderDestCard(d) {
 
 // ── Recommendation card — full match % + 5-dimension breakdown ─
 function renderRecommendationCard(d) {
-  const emoji = getEmoji(d);
   const match = d.match_pct || 0;
   const tags  = (d.tags || []).slice(0, 3)
                   .map(t => `<span class="dest-tag">${t}</span>`).join('');
 
-  // Match badge colour: green ≥70, amber 45–69, red-ish <45
-  const matchColor = match >= 70 ? '#10b981' : match >= 45 ? '#f59e0b' : '#6366f1';
+  // Match badge colour: green ≥70, amber 45–69, pink <45
+  const matchColor = match >= 70 ? '#00e5a0' : match >= 45 ? '#ffd93d' : '#e040fb';
 
   // Safety icon
   const safetyIcons = { 'very safe': '🟢', safe: '🟡', moderate: '🟠', unsafe: '🔴' };
@@ -219,7 +225,7 @@ function renderRecommendationCard(d) {
          onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
 
       <div class="dest-card-img">
-        ${emoji}
+        <img src="${getDestImg(d)}" alt="${d.name}" loading="lazy" onerror="this.style.display='none'"/>
         <div class="dest-card-img-overlay"></div>
         <div class="dest-card-match"
              style="background:${matchColor}cc;font-size:12px;font-weight:800;

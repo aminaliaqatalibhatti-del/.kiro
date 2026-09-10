@@ -351,14 +351,21 @@ function loadSavedDests() {
       </div>`;
     return;
   }
-  container.innerHTML = saved.map(d => `
+  container.innerHTML = saved.map(d => {
+    const imgUrl = (typeof DEST_IMAGES !== 'undefined' && DEST_IMAGES[(d.name||'').toLowerCase()])
+      || 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80';
+    return `
     <div class="dest-card" onclick="window.location.href='/planner.html?dest=${encodeURIComponent(d.name)}'">
-      <div class="dest-card-img" style="height:140px">${d.emoji || '🌍'}</div>
+      <div class="dest-card-img" style="height:140px">
+        <img src="${imgUrl}" alt="${d.name}" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>
+        <div class="dest-card-img-overlay"></div>
+      </div>
       <div class="dest-card-body">
         <div class="dest-card-country">${d.country || ''}</div>
         <div class="dest-card-name">${d.name}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── AI Suggestions ─────────────────────────────────────────────
