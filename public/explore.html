@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0a0a0f"/>
+  <title>Explore Destinations — TripPilot AI</title>
+  <meta name="description" content="Discover AI-matched travel destinations personalised to your interests, budget, and travel style."/>
+  <meta property="og:title" content="Explore Destinations — TripPilot AI"/>
+  <meta property="og:description" content="AI-matched destinations based on your interests, budget, and travel style."/>
+  <meta property="og:type" content="website"/>
+  <meta name="twitter:card" content="summary"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/main.css"/>
+  <style>html,body{background:#0a0a0f;color:#f1f5f9;margin:0}</style>
+</head>
+<body class="planner-body has-bottom-nav">
+
+<nav class="navbar navbar-solid">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <span class="logo-icon">✈</span>
+      <span class="logo-text">TripPilot <span class="logo-ai">AI</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/planner.html">Planner</a></li>
+      <li><a href="/dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-ghost" onclick="openModal('loginModal')">Log in</button>
+      <button class="btn-primary" onclick="openModal('registerModal')">Sign up</button>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<main style="padding-top:90px; min-height:100vh;">
+  <div class="container" style="padding:40px 20px;">
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:48px;">
+      <div class="section-label">Destination Explorer</div>
+      <h1 class="section-title">Find your next <span class="gradient-text">adventure</span></h1>
+      <p class="section-sub">AI-matched destinations based on your interests, budget, and travel style.</p>
+    </div>
+
+    <!-- Recommendation engine -->
+    <div class="explore-filters">
+      <div class="filter-group">
+        <label>Budget Level</label>
+        <div class="chip-group small">
+          <div class="chip selected" data-value="low" onclick="selectChipExplore(this,'budgetLevel')">Budget</div>
+          <div class="chip" data-value="medium" onclick="selectChipExplore(this,'budgetLevel')">Mid-range</div>
+          <div class="chip" data-value="high" onclick="selectChipExplore(this,'budgetLevel')">Luxury</div>
+        </div>
+        <input type="hidden" id="budgetLevel" value="low"/>
+      </div>
+      <div class="filter-group">
+        <label>Travel Type</label>
+        <div class="chip-group small">
+          <div class="chip selected" data-value="solo" onclick="selectChipExplore(this,'travelTypeE')">Solo</div>
+          <div class="chip" data-value="couple" onclick="selectChipExplore(this,'travelTypeE')">Couple</div>
+          <div class="chip" data-value="family" onclick="selectChipExplore(this,'travelTypeE')">Family</div>
+          <div class="chip" data-value="friends" onclick="selectChipExplore(this,'travelTypeE')">Friends</div>
+        </div>
+        <input type="hidden" id="travelTypeE" value="solo"/>
+      </div>
+      <div class="filter-group">
+        <label>Interests</label>
+        <div class="chip-group small" id="interestFilterGroup">
+          <div class="chip" data-value="nature" onclick="toggleInterestFilter(this)">🌿 Nature</div>
+          <div class="chip" data-value="adventure" onclick="toggleInterestFilter(this)">🧗 Adventure</div>
+          <div class="chip" data-value="food" onclick="toggleInterestFilter(this)">🍜 Food</div>
+          <div class="chip" data-value="history" onclick="toggleInterestFilter(this)">🏛 History</div>
+          <div class="chip" data-value="photography" onclick="toggleInterestFilter(this)">📷 Photography</div>
+          <div class="chip" data-value="shopping" onclick="toggleInterestFilter(this)">🛍 Shopping</div>
+          <div class="chip" data-value="nightlife" onclick="toggleInterestFilter(this)">🌃 Nightlife</div>
+          <div class="chip" data-value="luxury" onclick="toggleInterestFilter(this)">💎 Luxury</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="loadRecommendations()">✨ Get AI Recommendations</button>
+    </div>
+
+    <!-- Recommendation results -->
+    <div class="dest-grid" id="exploreDestGrid" style="margin-top:40px;"></div>
+
+    <!-- All destinations -->
+    <div style="margin-top:64px;">
+      <h2 class="section-title" style="font-size:1.6rem; margin-bottom:32px;">All Destinations</h2>
+      <div class="dest-grid" id="allDestGrid"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <p>© 2024 TripPilot AI. Built for explorers everywhere.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Auth Modals ────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close">✕</button>
+    <h2>Welcome back</h2>
+    <p class="modal-sub">Log in to access your trips and plans.</p>
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required/>
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required/>
+      <div class="form-error" id="loginError" role="alert"></div>
+      <button type="submit" class="btn-primary btn-full">Log in</button>
+    </form>
+    <p class="modal-switch">No account? <span onclick="switchModal('loginModal','registerModal')">Sign up</span></p>
+  </div>
+</div>
+<div class="modal-overlay" id="registerModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('registerModal')" aria-label="Close">✕</button>
+    <h2>Create your account</h2>
+    <p class="modal-sub">Start planning smarter trips today.</p>
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      <label>Full Name</label>
+      <input type="text" id="regName" placeholder="Your name" autocomplete="given-name" required/>
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email" required/>
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="Min 6 characters" autocomplete="new-password" required/>
+      <div class="form-error" id="registerError" role="alert"></div>
+      <button type="submit" class="btn-primary btn-full">Create account</button>
+    </form>
+    <p class="modal-switch">Already have an account? <span onclick="switchModal('registerModal','loginModal')">Log in</span></p>
+  </div>
+</div>
+
+<!-- ── Mobile Bottom Nav ──────────────────────────────────── -->
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+  <a href="/"><span class="nav-icon">🏠</span><span>Home</span></a>
+  <a href="/planner.html"><span class="nav-icon">✈️</span><span>Plan</span></a>
+  <a href="/explore.html" class="active" aria-current="page"><span class="nav-icon">🌍</span><span>Explore</span></a>
+  <a href="/dashboard.html"><span class="nav-icon">📊</span><span>Dashboard</span></a>
+</nav>
+
+<script src="/static/main.js" defer></script>
+<script src="/static/explore.js" defer></script>
+</body>
+</html>

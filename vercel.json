@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/index.py" },
+    { "src": "/static/(.*)", "dest": "public/static/$1" },
+    { "src": "/planner.html", "dest": "public/planner.html" },
+    { "src": "/explore.html",  "dest": "public/explore.html" },
+    { "src": "/dashboard.html","dest": "public/dashboard.html" },
+    { "src": "/",              "dest": "public/index.html" },
+    { "src": "/(.*)",          "dest": "public/$1" }
+  ]
+}

@@ -1,147 +1,147 @@
-# ✈️ TripPilot AI
+# TripPilot AI ✈️
 
-> **All-in-One AI Travel Planning Platform** — from discovery to departure, in one place.
-
----
-
-## 🌍 Overview
-
-TripPilot AI is a comprehensive, AI-powered travel planning platform that consolidates the entire trip-planning process into a single seamless experience. No more juggling between apps for destinations, budgets, weather, and itineraries — TripPilot AI brings it all together under one intelligent interface.
+AI-powered travel planning platform. Vercel pe deploy karo — **ek bhi server nahi, ek bhi dollar nahi.**
 
 ---
 
-## 🚀 Features
-
-| Module | Description |
-|--------|-------------|
-| 🗺️ **Destination Catalog** | 50+ curated destinations across 6 travel categories |
-| 🤖 **AI Itinerary Builder** | Auto-generated 5-day plans with activities, timings & cost estimates |
-| 💰 **Budget Insights** | Real-time budget tracking, cost breakdowns, and spending forecasts |
-| 🌤️ **Weather Forecasts** | Live weather data integrated directly into itinerary planning |
-| 📍 **Route Planning** | Google Maps integration for navigation between itinerary stops |
-| 💬 **AI Advisor Chat** | Conversational AI for real-time trip advice and adjustments |
-| 📋 **Bookings Dashboard** | Central hub to manage bookings, locations, and trip progress |
-
----
-
-## 🗂️ Project Structure
+## 🏗️ Project Structure
 
 ```
-/
-├── main.js              # Shared JS — auth, nav, toasts, hero search
-├── explore.js           # Explore page — AI recommendation engine
-├── dashboard.css        # Dashboard styles — sidebar, stats, trips, analytics
-├── /api
-│   ├── /auth            # Login, register, logout, session
-│   ├── /destinations    # Destination catalog endpoints
-│   └── /recommendations # Personalized AI recommendation engine
-└── /pages
-    ├── index            # Homepage with hero search
-    ├── explore          # Destination discovery + AI matches
-    ├── planner          # Itinerary builder
-    └── dashboard        # User trip management
+.kiro/
+├── api/                        ← FastAPI backend (Vercel serverless)
+│   ├── index.py                ← Entry point
+│   ├── config.py               ← Environment variables
+│   ├── data_store.py           ← In-memory storage
+│   ├── utils.py                ← Shared helpers
+│   ├── trip_engine.py          ← Core AI itinerary engine + 50+ destinations
+│   ├── ai_advisor.py           ← AI chat + destination advisor
+│   ├── weather_service.py      ← Weather (live OWM + offline fallback)
+│   ├── places_service.py       ← Hotels + geocoding
+│   └── routes/
+│       ├── auth.py             ← /api/auth/*
+│       ├── trips.py            ← /api/trips/*, /api/analytics/*
+│       ├── destinations.py     ← /api/destinations, /api/recommendations, /api/weather, /api/hotels
+│       └── ai.py               ← /api/ai/*
+│
+├── public/                     ← Static frontend (Vercel CDN)
+│   ├── index.html              ← Homepage
+│   ├── planner.html            ← Trip planning wizard
+│   ├── explore.html            ← Destination explorer
+│   ├── dashboard.html          ← User dashboard
+│   └── static/
+│       ├── main.css / main.js
+│       ├── planner.css / planner.js
+│       ├── dashboard.css / dashboard.js
+│       ├── explore.js
+│       └── ai_assistant.css / ai_assistant.js
+│
+├── vercel.json                 ← Vercel routing config
+├── requirements.txt            ← Python dependencies
+└── backend/                   ← Original Flask app (reference only, not deployed)
 ```
 
 ---
 
-## 🧠 AI Recommendation Engine
+## 🚀 Vercel Pe Deploy Karo (5 Minutes)
 
-The recommendation engine scores destinations across **5 dimensions** (max 100 pts):
+### Step 1 — GitHub pe push karo
 
-| Dimension | Max Score | How It Works |
-|-----------|-----------|--------------|
-| Interests | 40 pts | Jaccard similarity match against user interests |
-| Budget | 20 pts | Daily cost vs. user budget level |
-| Travel Style | 20 pts | Solo / couple / family / group matching |
-| Season | 10 pts | Best-season alignment with travel dates |
-| Group Size | 10 pts | Destination suitability for party size |
-
-Scores recalculate dynamically on every filter change with a 350ms debounce.
-
----
-
-## 🔄 User Flow
-
-```
-Onboarding → Destination Discovery → Itinerary Generation
-     → Budget Review → Weather Check → Route Planning
-          → AI Chat Support → Dashboard Management
-```
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend:** Vanilla JS (ES6+), CSS3 with custom properties
-- **Maps:** Google Maps API (embedded route planning)
-- **Auth:** Session-based authentication (`/api/auth`)
-- **AI:** Conversational advisor + scoring recommendation engine
-- **Weather:** Live forecast API integrated into itinerary view
-
----
-
-## ⚡ Getting Started
-
-### 1. Clone the repository
 ```bash
-git clone https://github.com/aminaliaqatalibhatti-del/.kiro.git
-cd .kiro
+git add .
+git commit -m "Migrated to FastAPI for Vercel deployment"
+git push origin main
 ```
 
-### 2. Install dependencies
+### Step 2 — Vercel mein import karo
+
+1. [vercel.com](https://vercel.com) pe jao → **Add New Project**
+2. GitHub repo select karo
+3. **Framework Preset** → `Other` select karo
+4. **Root Directory** → `.kiro` type karo (ya jahan yeh folder hai)
+5. **Build & Output Settings** mein kuch change mat karo
+6. **Deploy** dabao
+
+### Step 3 — Environment Variables (Optional)
+
+Vercel dashboard → Project → **Settings → Environment Variables** mein add karo:
+
+| Variable | Value | Zaroorat |
+|----------|-------|----------|
+| `SECRET_KEY` | koi random string (32+ chars) | ✅ Recommended |
+| `OPENWEATHER_API_KEY` | openweathermap.org se free key | ❌ Optional |
+| `OPENCAGE_API_KEY` | opencagedata.com se free key | ❌ Optional |
+
+> **Note:** API keys ke baghair bhi app poori tarah kaam karta hai — offline fallback data use karta hai.
+
+---
+
+## 💻 Local Development
+
 ```bash
-npm install
+# Dependencies install karo
+pip install -r requirements.txt
+
+# api/ folder se run karo
+cd api
+uvicorn index:app --reload --port 8000
 ```
 
-### 3. Set up environment variables
+Phir browser mein `http://localhost:8000/api/docs` pe FastAPI docs dekhoge.
+
+Frontend ke liye `public/index.html` directly browser mein open karo, ya koi bhi static server:
 ```bash
-cp .env.example .env
-# Add your API keys: Google Maps, Weather API, etc.
+# Python built-in server (public/ folder se)
+python -m http.server 3000 --directory public
 ```
 
-### 4. Run the development server
-```bash
-npm run dev
-```
-
-### 5. Open in browser
-```
-http://localhost:3000
-```
+Phir `http://localhost:3000` pe app chalega.
 
 ---
 
-## 📸 Screenshots
+## 🌐 API Endpoints
 
-> Screenshots coming soon — see `TripPilotAI_Platform_Documentation.docx` for the full platform walkthrough with figure references.
-
----
-
-## 📋 Key Differentiators
-
-| Other Tools | TripPilot AI |
-|-------------|--------------|
-| Multiple apps for planning | Single unified platform |
-| Manual itinerary building | AI auto-generates complete 5-day plans |
-| Generic destination lists | 50+ curated destinations matched to preferences |
-| No real-time budget tracking | Live cost estimates tied to every decision |
-| Separate weather apps | Forecasts embedded inside the itinerary |
-| Third-party map redirection | Google Maps natively integrated |
-| Static FAQ or no support | Live AI Advisor for personalized guidance |
-
----
-
-## 👤 Author
-
-**Amina Liaqat Ali Bhatti**
-- GitHub: [@aminaliaqatalibhatti-del](https://github.com/aminaliaqatalibhatti-del)
-
----
-
-## 📄 License
-
-This project was built as part of a Hackathon submission — June 2026.
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Account banao |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/logout` | Logout |
+| GET | `/api/auth/me` | Current user |
+| POST | `/api/trips/plan` | Trip plan generate karo |
+| GET | `/api/trips` | Apne saare trips |
+| GET | `/api/trips/{id}` | Single trip |
+| DELETE | `/api/trips/{id}` | Trip delete karo |
+| POST | `/api/trips/{id}/expenses` | Expense add karo |
+| PUT | `/api/trips/{id}/expenses/{eid}` | Expense edit karo |
+| DELETE | `/api/trips/{id}/expenses/{eid}` | Expense delete karo |
+| GET | `/api/analytics/summary` | Spending analytics |
+| GET | `/api/destinations` | Saare destinations |
+| POST | `/api/recommendations` | AI-matched recommendations |
+| GET | `/api/weather` | Weather forecast |
+| GET | `/api/hotels` | Hotel list |
+| GET | `/api/routes` | Route planning |
+| POST | `/api/ai/advisory` | Full AI advisory |
+| POST | `/api/ai/chat` | AI Q&A |
+| POST | `/api/ai/compare` | 2 destinations compare karo |
+| GET | `/api/health` | Health check |
 
 ---
 
-*TripPilot AI • All-in-One Travel Planning Platform • June 2026*
+## ⚠️ Vercel Limitations
+
+- **In-memory storage** — Server restart hone pe users/trips delete ho jaate hain. Production mein [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier available) ya [PlanetScale](https://planetscale.com) add karo.
+- **Cold starts** — Pehli request slow ho sakti hai (~2-3 sec). Normal hai Vercel serverless mein.
+- **Function timeout** — Vercel free plan mein 10 sec timeout hai. Trip planning ~2-4 sec leta hai — safe hai.
+
+---
+
+## 🔧 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | FastAPI (Python) |
+| Frontend | Vanilla JS + CSS3 |
+| Hosting | Vercel (Serverless) |
+| Storage | In-memory (upgrade to MongoDB) |
+| AI Engine | Rule-based Python (no OpenAI needed) |
+| Weather | OpenWeatherMap API + offline fallback |
+| Geocoding | OpenCage API + offline fallback |

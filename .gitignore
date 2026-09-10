@@ -3,12 +3,13 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.pyc
+.Python
 *.egg
 *.egg-info/
 dist/
 build/
-*.so
+.eggs/
+*.whl
 
 # Virtual environments
 venv/
@@ -17,51 +18,26 @@ env/
 ENV/
 .env
 
-# Environment / secrets
-.env
-.env.*
-*.env
-secrets.py
+# Environment variables
+.env.local
+.env.production
 
-# IDE
-.vscode/
-.idea/
-*.suo
-*.user
+# Vercel
+.vercel/
 
 # OS
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Data files with user data (keep structure, not content)
-backend/backend/data/users.json
-backend/backend/data/trips.json
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
 
-# Diagnostic / temp scripts
-diag.py
-diag2.py
-diag3_output.txt
-diag2_output.txt
-diag_output.txt
-diag_final.txt
-check_html.py
-check_html_final.txt
-check_html_out.txt
-check_v.py
-check_v_out.txt
-clean_and_verify.py
-clean_verify_out.txt
-count_dests.py
-count_dests_out.txt
-dest_count.txt
-find_template.py
-find_template_out.txt
-full_audit.py
-full_audit_out.txt
-verify_dests.py
-verify_dests_out.txt
-verify_dests_out2.txt
+# Old Flask app (kept for reference, not deployed)
+backend/backend/data/
 
 # Logs
 *.log
