@@ -52,7 +52,7 @@
   background: var(--primary);
   border-color: var(--primary);
   color: #fff;
-  box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
+  box-shadow: 0 0 0 4px rgba(224,64,251,0.2);
 }
 .si-step.active span:last-child { color: var(--primary-light); }
 .si-step.completed .si-dot {
@@ -101,8 +101,8 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--primary-light);
-  background: rgba(99,102,241,0.1);
-  border: 1px solid rgba(99,102,241,0.25);
+  background: rgba(224,64,251,0.1);
+  border: 1px solid rgba(224,64,251,0.25);
   border-radius: var(--r-full);
   padding: 4px 12px;
   margin-bottom: 12px;
@@ -151,7 +151,7 @@
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+  box-shadow: 0 0 0 3px rgba(224,64,251,0.12);
 }
 .form-group input::placeholder { color: #8494a7; }
 
@@ -178,7 +178,7 @@
   border: none;
   transition: all var(--t-fast);
 }
-.number-input button:hover { background: rgba(99,102,241,0.1); color: var(--primary-light); }
+.number-input button:hover { background: rgba(224,64,251,0.1); color: var(--primary-light); }
 .number-input span {
   min-width: 48px;
   text-align: center;
@@ -202,12 +202,12 @@
   white-space: nowrap;
 }
 .chip-group .chip:hover {
-  border-color: rgba(99,102,241,0.5);
+  border-color: rgba(224,64,251,0.5);
   color: var(--primary-light);
-  background: rgba(99,102,241,0.06);
+  background: rgba(224,64,251,0.06);
 }
 .chip-group .chip.selected {
-  background: rgba(99,102,241,0.15);
+  background: rgba(224,64,251,0.15);
   border-color: var(--primary);
   color: var(--primary-light);
   font-weight: 600;
@@ -239,12 +239,12 @@
   color: var(--text-secondary);
 }
 .interest-card:hover {
-  border-color: rgba(99,102,241,0.4);
-  background: rgba(99,102,241,0.06);
+  border-color: rgba(224,64,251,0.4);
+  background: rgba(224,64,251,0.06);
 }
 .interest-card.selected {
   border-color: var(--primary);
-  background: rgba(99,102,241,0.15);
+  background: rgba(224,64,251,0.15);
 }
 .interest-card.selected span { color: var(--primary-light); }
 
@@ -283,9 +283,9 @@
   transition: all var(--t-fast);
 }
 .budget-level-btn:hover {
-  border-color: rgba(6,182,212,0.4);
+  border-color: rgba(0,229,255,0.4);
   color: var(--accent);
-  background: rgba(6,182,212,0.08);
+  background: rgba(0,229,255,0.08);
 }
 
 /* Destination autocomplete */
@@ -413,7 +413,7 @@
   overflow: hidden;
   transition: border-color var(--t-normal);
 }
-.day-card:hover { border-color: rgba(99,102,241,0.2); }
+.day-card:hover { border-color: rgba(224,64,251,0.2); }
 
 .day-header {
   display: flex;
@@ -523,9 +523,9 @@
   border-radius: 50%;
   margin-top: 6px;
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+  box-shadow: 0 0 0 3px rgba(224,64,251,0.2);
 }
-.timeline-dot.food { background: var(--accent); box-shadow: 0 0 0 3px rgba(6,182,212,0.2); }
+.timeline-dot.food { background: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.2); }
 .timeline-dot.nature { background: var(--success); box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
 .timeline-dot.shopping { background: var(--warning); box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
 .timeline-content { flex: 1; }
@@ -580,7 +580,7 @@
   padding: 20px 24px;
   transition: border-color var(--t-normal);
 }
-.budget-kpi:hover { border-color: rgba(99,102,241,0.25); }
+.budget-kpi:hover { border-color: rgba(224,64,251,0.25); }
 .budget-kpi-label {
   font-size: var(--text-xs);
   font-weight: 700;
@@ -661,8 +661,8 @@
 
 /* AI Insights */
 .ai-insights-box {
-  background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(6,182,212,0.04));
-  border: 1px solid rgba(99,102,241,0.2);
+  background: linear-gradient(135deg, rgba(224,64,251,0.06), rgba(0,229,255,0.04));
+  border: 1px solid rgba(224,64,251,0.2);
   border-radius: var(--r-xl);
   padding: 20px 24px;
 }
@@ -698,7 +698,7 @@
   transition: all var(--t-normal);
   will-change: transform;
 }
-.hotel-card:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.hotel-card:hover { border-color: rgba(224,64,251,0.3); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 
 /* Hotel image placeholder using design tokens + shimmer */
 .hotel-img {
@@ -776,7 +776,7 @@
   text-align: center;
   transition: all var(--t-normal);
 }
-.weather-card:hover { border-color: rgba(6,182,212,0.3); transform: translateY(-3px); }
+.weather-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-3px); }
 .weather-card.rain { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.04); }
 .weather-card.storm { border-color: rgba(245,158,11,0.2); background: rgba(245,158,11,0.04); }
 .weather-date { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
