@@ -1,0 +1,6 @@
+backend/
+frontend/
+add_dest_metadata.py
+verify_all.py
+run_diag.bat
+start_fresh.bat
